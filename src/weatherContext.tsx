@@ -1,7 +1,6 @@
 import React, { createContext, useState } from "react";
 import weatherSearch from "./api/openWeatherData";
 import imageSearch from "./api/unsplash";
-import defaultBg from "./images/cold-bg.jpg";
 
 const initialWeather = {
   temperature: -1,
@@ -23,11 +22,14 @@ type ContextValue = {
   bgUrl: string;
 };
 
+const intitialBg =
+  "https://images.unsplash.com/photo-1550825406-7e94dcee0b68?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1491&q=80";
+
 const WeatherContext = createContext<ContextValue>({
   weather: initialWeather,
   search: initialSearch,
   error: null,
-  bgUrl: defaultBg,
+  bgUrl: intitialBg,
 });
 
 interface Props {
@@ -37,7 +39,7 @@ interface Props {
 const WeatherProvider: React.FC<Props> = ({ children }) => {
   const [weatherState, setWeather] = useState<Weather>(initialWeather);
   const [error, setError] = useState<string | null>(null);
-  const [bgUrl, setBgUrl] = useState(defaultBg);
+  const [bgUrl, setBgUrl] = useState(intitialBg);
 
   const search: (query: string) => void = async (query) => {
     const [{ weather, error }, bgUrl] = await Promise.all([
@@ -48,7 +50,7 @@ const WeatherProvider: React.FC<Props> = ({ children }) => {
     console.log(bgUrl);
 
     if (bgUrl && bgUrl.length) setBgUrl(bgUrl);
-    else setBgUrl(defaultBg);
+    else setBgUrl(intitialBg);
 
     if (error) {
       setWeather(initialWeather);

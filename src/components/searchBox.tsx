@@ -7,9 +7,13 @@ const SearchBox: React.FC = () => {
 
   const handleKeyPress: (e: React.KeyboardEvent) => void = (e) => {
     if (e.key === "Enter") {
-      search(query);
-      setQuery("");
+      submit();
     }
+  };
+
+  const submit: () => void = () => {
+    search(query);
+    setQuery("");
   };
 
   return (
@@ -22,6 +26,7 @@ const SearchBox: React.FC = () => {
         value={query}
         onKeyPress={handleKeyPress}
       />
+      <button onClick={submit}>Go!</button>
     </div>
   );
 };
