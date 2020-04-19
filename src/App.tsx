@@ -2,12 +2,14 @@ import React, { useState, useContext } from "react";
 import WeatherContext from "./weatherContext";
 
 const App = () => {
-  // TODO: Set types
   const [query, setQuery] = useState("");
-  const { weather, search } = useContext(WeatherContext);
+  const { weather, search, bgUrl } = useContext(WeatherContext);
 
   const handleKeyPress: (e: React.KeyboardEvent) => void = (e) => {
-    if (e.key === "Enter") search(query);
+    if (e.key === "Enter") {
+      search(query);
+      setQuery("");
+    }
   };
 
   const dateBuilder: (d: Date) => string = (d) => {
@@ -45,9 +47,11 @@ const App = () => {
 
   return (
     <div
-      className={`app ${
-        weather.temperature && weather.temperature > 16 ? "warm" : "cold"
-      }`}
+      style={{ backgroundImage: `url("${bgUrl}")` }}
+      className="app"
+      // className={`app ${
+      //   weather.temperature && weather.temperature > 16 ? "warm" : "cold"
+      // }`}
     >
       <main>
         <div className="search-box">

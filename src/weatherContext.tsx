@@ -1,12 +1,7 @@
 import React, { createContext, useState } from "react";
-
-interface Weather {
-  temperature: number;
-  weather: string;
-  name: string;
-  country: string;
-  valid: boolean;
-}
+import weatherSearch from "./api/openWeatherData";
+import imageSearch from "./api/unsplash";
+import defaultBg from "./images/cold-bg.jpg";
 
 const initialWeather = {
   temperature: -1,
@@ -25,61 +20,49 @@ type ContextValue = {
   weather: Weather;
   search: Search;
   error: string | null;
+  bgUrl: string;
 };
 
 const WeatherContext = createContext<ContextValue>({
   weather: initialWeather,
   search: initialSearch,
   error: null,
+  bgUrl: defaultBg,
 });
-
-const api = {
-  key: process.env.REACT_APP_API_KEY,
-  baseUrl: "https://api.openweathermap.org/data/2.5",
-};
 
 interface Props {
   children: React.ReactNode;
 }
 
-const mapErrorCodeToMessage: (code: number) => string = (code) => {
-  switch (code) {
-    case 401:
-      return "The API key is invalid. Please supply another key";
-    case 404:
-      return "Location not found. Check your spelling and try again!";
-    default:
-      return "Woops, something went wrong!";
-  }
-};
-
 const WeatherProvider: React.FC<Props> = ({ children }) => {
   const [weatherState, setWeather] = useState<Weather>(initialWeather);
   const [error, setError] = useState<string | null>(null);
+  const [bgUrl, setBgUrl] = useState(defaultBg);
 
-  const search: (query: string) => void = (query) => {
-    fetch(`${api.baseUrl}/weather?q=${query}&units=metric&appid=${api.key}`)
-      .then((res) => res.json())
-      .then((res) => {
-        console.log(res);
-        if (+res.cod >= 400) {
-          setWeather(initialWeather);
-          setError(mapErrorCodeToMessage(+res.cod));
-        } else {
-          setError(null);
-          setWeather({
-            temperature: res.main.temp,
-            weather: res.weather[0].main,
-            name: res.name,
-            country: res.sys.country,
-            valid: true,
-          });
-        }
-      });
+  const search: (query: string) => void = async (query) => {
+    const [{ weather, error }, bgUrl] = await Promise.all([
+      weatherSearch(query),
+      imageSearch(query),
+    ]);
+
+    console.log(bgUrl);
+
+    if (bgUrl && bgUrl.length) setBgUrl(bgUrl);
+    else setBgUrl(defaultBg);
+
+    if (error) {
+      setWeather(initialWeather);
+      setError(error);
+    } else if (weather) {
+      setWeather(weather);
+      setError(null);
+    }
   };
 
   return (
-    <WeatherContext.Provider value={{ weather: weatherState, search, error }}>
+    <WeatherContext.Provider
+      value={{ weather: weatherState, search, error, bgUrl }}
+    >
       {children}
     </WeatherContext.Provider>
   );
