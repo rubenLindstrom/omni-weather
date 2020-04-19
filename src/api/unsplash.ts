@@ -1,12 +1,9 @@
 // ES Modules syntax
 import Unsplash, { toJson } from "unsplash-js";
 
-const api: API = {
-  key: process.env.REACT_APP_UNSPLASH_KEY || "",
-  baseUrl: "",
-};
-
-const unsplash: Unsplash = new Unsplash({ accessKey: api.key });
+const unsplash: Unsplash = new Unsplash({
+  accessKey: process.env.REACT_APP_UNSPLASH_KEY || "",
+});
 
 type Search = (query: string) => Promise<string>;
 
