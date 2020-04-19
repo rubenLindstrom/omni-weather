@@ -12,10 +12,6 @@ body {
   background-size: cover;
   background-position: bottom;
   transition: 0.4s ease-out;
-
-  &.warm {
-    background-image: url("./images/warm-bg.jpg");
-  }
 }
 
 main {
